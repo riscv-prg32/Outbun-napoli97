@@ -1,0 +1,28 @@
+{
+  "abi": "prg32-colophon-1.0",
+  "title": "OutBun-napoli97",
+  "version": "1.0.0",
+  "developer": {"name": "Raffaele Montella"},
+  "authors": [
+    {"role": "Concept and direction", "name": "Raffaele Montella"},
+    {"role": "Engine, procedural pixel art and music", "name": "Claude (Anthropic)"}
+  ],
+  "controls": [
+    {"input": "A", "action": "Accelerate / confirm"},
+    {"input": "B", "action": "Brake / back"},
+    {"input": "LEFT / RIGHT", "action": "Steer"},
+    {"input": "UP / DOWN", "action": "Shift HI / LO gear"},
+    {"input": "START", "action": "Pause"}
+  ],
+  "technology": [
+    "PRG32 portable cartridge in the 64 KiB profile",
+    "integer pseudo-3D segment road with hills, tunnels and viaducts",
+    "92 sections reproducing SS18, SS145, Massa Lubrense and SS163",
+    "cartridge-programmed 216-colour palette with time-of-day blending",
+    "row-group nibble-RLE sprites drawn as indexed spans",
+    "four-player multiplayer snapshots with CPU takeover",
+    "8-voice SID-like procedural soundtrack"
+  ],
+  "license": "MIT",
+  "legal": "Original work. Period vehicles and places are named descriptively; no trademarks or logos are reproduced and no affiliation is implied."
+}

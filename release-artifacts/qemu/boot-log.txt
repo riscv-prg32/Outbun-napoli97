@@ -1,0 +1,35 @@
+I (1098) prg32_cart: loaded cartridge 'OutBun-napoli97' (43168 bytes code, 48220 bytes memory, 2496 bytes audio)
+I (128) prg32_main: starting PRG32 runtime
+prg32_init()
+prg32_init => prg32_display_init()
+I (128) prg32_qemu: QEMU RGB framebuffer ready at 320x240
+prg32_init => prg32_rgb_led_init()
+prg32_init => prg32_buzzer_init()
+prg32_init => prg32_audio_load_global_settings()
+prg32_init => detect_audio_output()
+I (138) prg32_qemu_audio: UART1 initialized successfully.
+prg32_init => prg32_splash_show_default()
+prg32_init => prg32_input_init()
+prg32_input_init START
+prg32_input_init PIN_BTN_START
+prg32_input_init PIN_BTN_SELECT
+prg32_input_init END
+prg32_init => prg32_abi_exports_keep()
+prg32_init => prg32_cart_init()
+prg32_init => prg32_band_load_config()
+prg32_init => prg32_input_read_menu()
+I (1078) prg32_qemu_input: QEMU keyboard input enabled
+prg32_init => prg32_cart_stored_count()
+prg32_init: stored cartridges=1
+prg32_init => prg32_wifi_setup_requested()
+prg32_init => prg32_cart_default_slot()
+prg32_init => autoload_cartridge()
+I (1098) prg32_cart: loaded cartridge 'OutBun-napoli97' (43168 bytes code, 48220 bytes memory, 2496 bytes audio)
+prg32_init => wifi_scores_init()
+prg32_init => scores_api_start()
+prg32_init => cart_is_loaded()
+prg32_init => cart_stored_count()
+prg32_init => cart_is_loaded()
+I (1128) prg32_main: PRG32 runtime initialized
+PLAY_TRACK SUCCESS: Starting track 0
+PLAY_TRACK SUCCESS: Starting track 1

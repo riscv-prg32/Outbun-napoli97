@@ -1,0 +1,9 @@
+# build intermediates
+build/
+__pycache__/
+*.pyc
+*.o
+*.elf
+*.map
+.DS_Store
+# dist/ is committed: it holds the ready-to-publish Cartridge Store bundle
