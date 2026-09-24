@@ -487,37 +487,96 @@ def dyane() -> Image.Image:
 
 
 def beetle() -> Image.Image:
-    """VW Beetle (Maggiolino): domed roof, oval window, big wing lamps."""
-    c = Canvas(CAR_W, CAR_H)
-    body, body_d = (70, 150, 214), (22, 70, 124)
-    car_base(c, track=4.5, tyre_w=11.0)
-    # bulbous rear wings
-    for x0 in (2.5, 34.5):
-        c.ell((x0, 13, x0 + 19, 32), body + (255,))
-    c.ell((10, 0.8, 46, 30), body + (255,))
-    c.rect((9, 18, 47, 28), body + (255,))
-    c.vgrad((2, 0.5, 54, 32), (138, 196, 240), body_d)
-    c.hshade((2, 0.5, 54, 32), 1.06, 0.8)
-    # oval rear window
-    c.ell((20, 4.2, 36, 10.6), GLASS + (255,))
-    c.line([(22.5, 5.6), (27, 5.2)], GLASS_HI + (255,), 0.6)
-    # engine lid with vents
-    c.poly([(21, 12.5), (35, 12.5), (37, 24), (19, 24)], shade(body, 0.92) + (255,))
-    for k in range(4):
-        c.line([(22.5 + k * 0.1, 13.8 + k * 1.1), (33.5 - k * 0.1, 13.8 + k * 1.1)], shade(body_d, 0.7) + (255,), 0.5)
-    c.ell((26.6, 20.6, 29.4, 22.2), CHROME + (255,))
-    # tall "elephant foot" wing lamps
-    for cx in (9.8, 46.2):
-        c.ell((cx - 2.4, 14.5, cx + 2.4, 23.5), (218, 26, 30, 255))
-        c.ell((cx - 1.8, 20.3, cx + 1.8, 23.3), (246, 150, 28, 255))
-        c.ell((cx - 1.1, 15.4, cx + 0.2, 17.3), (255, 170, 160, 255))
-    c.rect((3, 25.2, 53, 27), CHROME + (255,), r=0.9)
-    for x in (13, 43):
-        c.rect((x - 0.8, 23.4, x + 0.8, 28.2), CHROME + (255,), r=0.5)
-    plate(c, 28, 24.0)
-    for x in (22.5, 33.5):
-        c.ell((x - 1.3, 28.8, x + 1.3, 31.2), CHROME_D + (255,))
-    return c.finish()
+    """VW Beetle (Maggiolino, late 1960s), rear view, placed pixel by pixel.
+
+    The layout comes from a rear reference photograph (463x507, car spanning
+    x=18..445, roof at y=72, exhausts to y=490), mapped to 56x48 (sprite
+    x = (px - 18) * 0.131, y = (py - 72) * 0.115): the domed roof with the
+    soft-top, the oval rear window with the vents below it, the rounded
+    engine lid with its louvres and handle, the black two-row plate, the
+    bulging rear wings with round red lamps, the chrome blade bumper with
+    its overriders and the twin exhausts. Deep blue, as in the reference.
+    """
+    W, H = 56, 48
+    pal = {
+        "W": (38, 72, 152), "w": (70, 110, 190), "H": (150, 182, 232), "s": (26, 50, 110),
+        "d": (16, 30, 72), "k": (24, 24, 28), "g": (48, 60, 78), "G": (140, 156, 176),
+        "c": (226, 230, 236), "C": (140, 146, 156), "r": (204, 40, 30), "R": (255, 130, 100),
+        "t": (44, 44, 48), "o": SHADOW,
+    }
+    grid = [[" "] * W for _ in range(H)]
+
+    def put(y, x, ch, both=True):
+        grid[y][x] = ch
+        if both:
+            grid[y][W - 1 - x] = ch
+
+    def span(y, x0, x1, ch, both=True):
+        for x in range(x0, x1 + 1):
+            put(y, x, ch, both)
+
+    # silhouette: domed roof flaring into the rear wings
+    edge = [14, 12, 11, 10, 10, 9, 9, 8, 8, 8, 7, 7, 7, 7, 6, 6, 6, 6, 5, 5, 5, 4, 4, 3, 3,
+            2, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+    for y, e in enumerate(edge):
+        span(y, e, 27, "W")
+        put(y, e, "d")
+        put(y, e + 1, "s")
+    span(0, 14, 27, "k"); span(1, 13, 27, "k"); span(2, 13, 27, "k")   # soft-top
+    for y in range(3, 6):                                  # glossy roof highlight
+        span(y, 16, 20, "w")
+    span(4, 17, 19, "H")
+    for y in range(6, 17):                                 # oval rear window
+        x0 = 14 if y in (6, 16) else 13 if y in (7, 15) else 12
+        put(y, x0, "k")
+        span(y, x0 + 1, 27, "g")
+    span(6, 15, 27, "k"); span(16, 15, 27, "k")
+    for y in range(8, 15):                                 # reflection, right half only
+        put(y, 37 - (y - 8) // 2, "G", False)
+    for y in (17, 18):                                     # vents under the window
+        span(y, 13, 18, "k" if y == 17 else "s")
+    for y in range(18, 31):                                # rounded engine lid outline
+        x0 = 15 if y in (18, 30) else 14
+        put(y, x0, "s")
+    span(18, 15, 27, "s"); span(30, 15, 27, "s")
+    for y in (21, 23):                                     # lid louvres
+        span(y, 16, 19, "k")
+    span(27, 27, 27, "c"); span(28, 27, 27, "c")           # handle
+    for y in range(19, 30):                                # wing highlights
+        put(y, 3 if y > 24 else 5, "w")
+    span(22, 4, 6, "H", False)
+    for y in range(29, 37):                                # black two-row plate
+        span(y, 23, 27, "k")
+    for y0 in (30, 33):
+        for x in (24, 26, 29, 31):
+            for y in range(y0, y0 + 2):
+                grid[y][x] = "c"
+    for y in range(29, 37):                                # round wing lamps
+        x0, x1 = (6, 8) if y in (29, 36) else (5, 9)
+        span(y, x0, x1, "r")
+    put(31, 6, "R"); put(32, 6, "R")
+    for y, x in ((19, 9), (20, 9), (21, 10), (22, 10), (23, 11), (24, 11), (25, 12), (26, 12),
+                 (27, 12), (28, 12), (29, 13), (30, 13), (31, 13), (32, 13), (33, 13), (34, 13),
+                 (35, 13), (36, 13)):                      # seam where the wing meets the body
+        put(y, x, "s")
+    for y in range(38, 45):                                # tyres
+        span(y, 1, 4, "t")
+    for y in range(40, 48):
+        span(y, 5, 27, "o")
+    span(37, 1, 27, "c"); span(38, 0, 27, "c"); span(39, 1, 27, "C")   # chrome blade bumper
+    for y in range(34, 44):                                # overriders
+        put(y, 10, "c"); put(y, 11, "C")
+    for y in range(40, 45):                                # twin exhausts
+        span(y, 19, 21, "C")
+        put(y, 20, "k")
+    span(47, 1, 4, "o")
+    img = Image.new("RGBA", (W, H))
+    px = img.load()
+    for y in range(H):
+        for x in range(W):
+            ch = grid[y][x]
+            px[x, y] = (0, 0, 0, 0) if ch == " " else pal[ch] + (255,)
+    return img
 
 
 # ---------------------------------------------------------------------------

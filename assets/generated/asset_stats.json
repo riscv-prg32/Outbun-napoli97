@@ -1,6 +1,6 @@
 {
  "sprites": 35,
- "rle_bytes": 9432,
+ "rle_bytes": 9632,
  "lut_bytes": 585,
  "palette_entries": 176,
  "theme_bytes": 740,
@@ -19,7 +19,7 @@
   ],
   "CAR_BEETLE": [
    56,
-   36
+   48
   ],
   "APE": [
    36,
