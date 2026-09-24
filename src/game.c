@@ -95,10 +95,10 @@ typedef struct { int32_t z; int16_t x, speed; uint8_t type, lane; } traffic_t;
 static const int16_t car_top[4] = {3200, 3120, 3060, 3280};
 static const uint8_t car_accel[4] = {18, 20, 17, 16};
 static const uint8_t car_grip[4] = {17, 16, 20, 15};
-static const char car_names[4][14] = {"FIAT 500", "FIAT 126", "CITROEN DYANE", "VW MAGGIOLINO"};
+static const char car_names[4][14] = {"FIAT 500 L", "FIAT 126", "CITROEN DYANE", "VW MAGGIOLINO"};
 static const char car_tag[4][4] = {"500", "126", "DYA", "VW"};
 /* left tail lamp {x, y, w, h} in sprite pixels; the right lamp is mirrored */
-static const uint8_t car_lamp[4][4] = {{6, 14, 4, 7}, {5, 15, 8, 3}, {7, 17, 5, 5}, {8, 15, 4, 6}};
+static const uint8_t car_lamp[4][4] = {{5, 35, 3, 5}, {5, 15, 8, 3}, {7, 17, 5, 5}, {8, 15, 4, 6}};
 static const uint8_t car_dot[4] = {C_WHITE, C_RED, C_YELLOW, C_CYAN};
 
 /* ------------------------------------------------------------------------ */
@@ -421,9 +421,10 @@ static void spr(int id, int lut_index, int cx, int by, int dw, int mirror, int l
 
 /* brake lamps glow on top of a car sprite drawn with spr() */
 static void car_lamps(int car, int cx, int by, int dw, int lean) {
-    int dh = 36 * dw / 56, x0 = cx - dw / 2, y0 = by - dh;
+    int ch = ob_sprites[SPR_CAR_500 + car].h;   /* the 500 L is taller than the rivals */
+    int dh = ch * dw / 56, x0 = cx - dw / 2, y0 = by - dh;
     const uint8_t *l = car_lamp[car];
-    int lx = l[0] * dw / 56, ly = l[1] * dh / 36, lw = imax(1, l[2] * dw / 56), lh = imax(1, l[3] * dh / 36);
+    int lx = l[0] * dw / 56, ly = l[1] * dh / ch, lw = imax(1, l[2] * dw / 56), lh = imax(1, l[3] * dh / ch);
     int sh = lean * (dh - ly) / dh;
     fill(x0 + lx + sh, y0 + ly, lw, lh, C_BRAKE);
     fill(x0 + dw - lx - lw + sh, y0 + ly, lw, lh, C_BRAKE);
@@ -858,7 +859,7 @@ static void render_sprites(void) {
             draw_car_at(r->car, sx, sy, z, r->brake, r->lean);
             if (r->kind == RK_PEER && z < 6000) {
                 int dw = (int)((int32_t)56 * PLAYER_DZ / imax(1, z));
-                fill(sx - 2, sy - dw * 36 / 56 - 8, 4, 4, car_dot[r->car]);
+                fill(sx - 2, sy - dw * ob_sprites[SPR_CAR_500 + r->car].h / 56 - 8, 4, 4, car_dot[r->car]);
             }
         }
     }

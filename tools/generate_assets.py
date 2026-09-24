@@ -224,52 +224,97 @@ def plate(c: Canvas, cx, y, text_color=(20, 20, 30)):
 
 
 def fiat500() -> Image.Image:
-    """White Fiat 500 (1965-75), Abarth-style propped engine lid, dual pipes."""
-    c = Canvas(CAR_W, CAR_H)
-    body, body_d = (242, 242, 236), (176, 178, 184)
-    car_base(c, track=5.0, tyre_w=11.5)
-    # rounded lower body
-    c.rect((4, 12, 52, 30), body + (255,), r=7)
-    c.poly([(6, 22), (50, 22), (52, 29), (4, 29)], body + (255,))
-    # roof / greenhouse
-    c.rect((13, 1.5, 43, 16), body + (255,), r=7)
-    c.vgrad((3, 1, 53, 31), (252, 252, 248), body_d)
-    c.hshade((3, 1, 53, 31), 1.06, 0.84)
-    # rolled canvas sunroof
-    c.rect((19, 1.6, 37, 4.2), (150, 120, 88, 255), r=1.3)
-    c.line([(20, 2.8), (36, 2.8)], (110, 86, 62, 255), 0.5)
-    # rear window
-    c.rect((16.5, 5, 39.5, 12.2), GLASS + (255,), r=3.5)
-    c.line([(19, 6.3), (26, 6.3)], GLASS_HI + (255,), 0.7)
-    c.line([(29, 11), (37, 7)], (60, 84, 116, 255), 0.6)
-    # propped Abarth engine lid (raised), engine bay shadow beneath it
-    c.rect((17, 17.4, 39, 25.5), (14, 14, 18, 255), r=1.5)
-    c.poly([(16.5, 13.2), (39.5, 13.2), (41, 19.2), (15, 19.2)], (236, 236, 232, 255))
-    c.hshade((15, 13, 41.5, 19.6), 1.05, 0.86)
-    for k in range(4):
-        y = 14.5 + k * 1.2
-        c.line([(19.5, y), (36.5, y)], (122, 124, 130, 255), 0.45)
-    # lid struts
-    c.line([(18, 19.2), (18.8, 23.5)], CHROME_D + (255,), 0.5)
-    c.line([(38, 19.2), (37.2, 23.5)], CHROME_D + (255,), 0.5)
-    # red racing stripe on the lower body (souped-up)
-    c.rect((5, 22.2, 51, 23.4), (206, 32, 40, 255))
-    # tail lights: vertical ovals, red over amber
-    for x0 in (6.2, 45.6):
-        c.ell((x0, 13.5, x0 + 4.2, 21.5), (210, 26, 30, 255))
-        c.ell((x0 + 0.5, 18.2, x0 + 3.7, 21.4), (244, 150, 26, 255))
-        c.ell((x0 + 0.9, 14.3, x0 + 2.2, 16.0), (255, 160, 150, 255))
-    # chrome bumper with overriders
-    c.rect((4.5, 25.6, 51.5, 27.4), CHROME + (255,), r=0.9)
-    c.line([(5, 27.3), (51, 27.3)], CHROME_D + (255,), 0.5)
-    for x in (15.5, 40.5):
-        c.rect((x - 0.9, 23.8, x + 0.9, 28.6), CHROME + (255,), r=0.6)
-    plate(c, 28, 26.2)
-    # dual Abarth exhaust
-    for x in (20.5, 35.5):
-        c.ell((x - 1.6, 29.0, x + 1.6, 31.6), CHROME_D + (255,))
-        c.ell((x - 0.8, 29.6, x + 0.8, 31.0), (20, 20, 20, 255))
-    return c.finish()
+    """White Fiat 500 L (1968-72), rear view, placed pixel by pixel.
+
+    The layout comes from the rear reference photograph (a 540x510 crop with
+    the car spanning x=20..512, roof at y=18, tyres at y=505), mapped to
+    56x48 (sprite x = (px - 20) * 0.114, y = (py - 18) * 0.099). At this size
+    every feature is 1-3 pixels, so each one is placed by hand on that grid
+    rather than painted and downsampled: the domed roof with the folded
+    soft-top, the framed rear window, the slatted grille band, the two
+    louvre panels and chrome handle on the engine lid, the plate-light hump
+    over the black two-row plate, the tall amber-over-red wing lamps, the
+    "500 L" script and the thin chrome bumper.
+    """
+    W, H = 56, 48
+    pal = {
+        "W": (242, 243, 240), "w": (212, 216, 222), "s": (178, 184, 196), "d": (120, 126, 140),
+        "k": (34, 34, 38), "f": (84, 60, 48), "g": (46, 58, 72), "G": (164, 176, 192),
+        "a": (244, 172, 32), "r": (206, 32, 34), "R": (255, 150, 140), "c": (222, 226, 232),
+        "C": (140, 146, 158), "o": SHADOW, "t": (62, 62, 68),
+    }
+    grid = [[" "] * W for _ in range(H)]
+
+    def put(y, x, ch, both=True):
+        grid[y][x] = ch
+        if both:
+            grid[y][W - 1 - x] = ch
+
+    def span(y, x0, x1, ch, both=True):
+        for x in range(x0, x1 + 1):
+            put(y, x, ch, both)
+
+    # left silhouette edge per body row (measured, mirrored on the right)
+    edge = [18, 15, 13, 11, 10, 9, 9, 8, 8, 8, 8, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 5, 5, 4, 4, 3, 3,
+            2, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+    for y, e in enumerate(edge):
+        span(y, e, 27, "W")
+        put(y, e, "d")
+        if e + 1 <= 27:
+            put(y, e + 1, "s" if y >= 26 else "w")
+        if y >= 29 and e + 2 <= 27:
+            put(y, e + 2, "w")
+    span(0, 18, 27, "k")                                   # folded soft-top on the roof
+    # rear window: rubber frame, glass
+    span(4, 13, 27, "f")
+    for y in range(5, 14):
+        put(y, 13, "f")
+        span(y, 14, 27, "g")
+    span(14, 13, 27, "f")
+    for y in range(5, 14):                                 # sun glare, right half only
+        x = 38 - (y - 5)
+        put(y, x, "G", False); put(y, x + 1, "G", False)
+    put(6, 16, "G", False)
+    span(15, 10, 27, "w")                                  # crease under the window
+    for y in (17, 18):                                     # slatted grille band
+        for x in range(12, 28):
+            put(y, x, "k" if x % 2 == 0 else "w")
+    span(20, 9, 27, "w")                                   # engine-lid top edge
+    for y in (21, 23, 25):                                 # louvre panels
+        span(y, 12, 22, "k")
+    for y in range(21, 25):                                # chrome handle
+        put(y, 27, "C")
+    for y, x0 in ((28, 25), (29, 23), (30, 23)):          # plate-light hump, clear of the plate
+        span(y, x0, 27, "k")
+    for y in range(32, 42):                                # black plate
+        span(y, 21, 27, "k")
+    for y0 in (33, 37):                                    # "LE 18 / 1801": two rows of strokes
+        for x in (22, 24, 26):
+            for y in range(y0, y0 + 3):
+                put(y, x, "c")
+    for y in range(31, 41):                                # wing lamps, chrome rim
+        span(y, 4, 8, "c")
+    for y in range(32, 35):
+        span(y, 5, 7, "a")
+    for y in range(35, 40):
+        span(y, 5, 7, "r")
+    put(36, 5, "R")
+    span(36, 12, 13, "k", False); span(36, 15, 17, "k", False)   # "500 L" script
+    span(37, 13, 16, "k", False)
+    for y in (40, 41, 42):                                 # bumper (behind the plate)
+        span(y, 1, 27, "c")
+    span(40, 21, 27, "k"); span(41, 21, 27, "k")
+    span(43, 1, 27, "C")
+    for y in range(44, 48):                                # tyres and ground shadow
+        span(y, 1, 27, "o")
+        span(y, 2, 8, "t")
+    img = Image.new("RGBA", (W, H))
+    px = img.load()
+    for y in range(H):
+        for x in range(W):
+            ch = grid[y][x]
+            px[x, y] = (0, 0, 0, 0) if ch == " " else pal[ch] + (255,)
+    return img
 
 
 def fiat126() -> Image.Image:
@@ -1286,10 +1331,11 @@ def main():
         sheet.paste(prev.resize((w, h), Image.Resampling.NEAREST), (x, y), prev.resize((w, h), Image.Resampling.NEAREST))
     sheet.save(GEN / "sprite_sheet.png", optimize=True)
 
-    cars = Image.new("RGB", (4 * 60 * 3, 44 * 3), (96, 96, 104))
+    cars = Image.new("RGB", (4 * 60 * 3, 52 * 3), (96, 96, 104))
     for i in range(4):
-        prev = remapped_images[i][1].resize((56 * 3, 36 * 3), Image.Resampling.NEAREST)
-        cars.paste(prev, (i * 180 + 6, 12), prev)
+        im_ = remapped_images[i][1]
+        prev = im_.resize((im_.width * 3, im_.height * 3), Image.Resampling.NEAREST)
+        cars.paste(prev, (i * 180 + 6, 52 * 3 - prev.height - 6), prev)
     cars.save(GEN / "cars.png", optimize=True)
 
     # Theme swatches
@@ -1373,8 +1419,8 @@ def make_icon(path: Path):
     for y in range(36, 64, 6):
         w = 1 + (y - 34) // 8
         d.rectangle([32 - w // 2, y, 32 + w // 2, y + 2], fill=(246, 246, 240))
-    car = fiat500().resize((42, 27), Image.Resampling.NEAREST)
-    im.paste(car, (11, 35), car)
+    car = fiat500().resize((36, 31), Image.Resampling.NEAREST)
+    im.paste(car, (14, 33), car)
     bun = ingredient(0).resize((20, 20), Image.Resampling.NEAREST)
     im.paste(bun, (3, 2), bun)
     icon = im.resize((256, 256), Image.Resampling.NEAREST).quantize(colors=32, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)

@@ -1,13 +1,13 @@
 {
  "sprites": 35,
- "rle_bytes": 9070,
+ "rle_bytes": 9271,
  "lut_bytes": 585,
  "palette_entries": 176,
  "theme_bytes": 740,
  "per_sprite": {
   "CAR_500": [
    56,
-   36
+   48
   ],
   "CAR_126": [
    56,

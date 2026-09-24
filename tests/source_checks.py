@@ -28,7 +28,7 @@ ingredients = re.findall(r'"([^"]+)"', re.search(r"ingredient_names\[9\]\[24\] =
 assert len(ingredients) == 9 and ingredients[0] == "PANE ROSETTA"
 
 # --- cars: white Fiat 500 hero, 126 / Dyane / Beetle for players and CPU ------
-assert re.search(r'car_names\[4\]\[14\] = \{"FIAT 500", "FIAT 126", "CITROEN DYANE", "VW MAGGIOLINO"\}', game)
+assert re.search(r'car_names\[4\]\[14\] = \{"FIAT 500 L", "FIAT 126", "CITROEN DYANE", "VW MAGGIOLINO"\}', game)
 for spr in ("CAR_500", "CAR_126", "CAR_DYANE", "CAR_BEETLE"):
     assert f"#define SPR_{spr}" in assets, spr
 assert "if (c == chosen_car) continue;" in game          # AI take the cars nobody picked
