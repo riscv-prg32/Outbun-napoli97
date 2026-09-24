@@ -318,36 +318,93 @@ def fiat500() -> Image.Image:
 
 
 def fiat126() -> Image.Image:
-    """Fiat 126 (1972-): boxy rear, black louvred engine lid, wide lamps."""
-    c = Canvas(CAR_W, CAR_H)
-    body, body_d = (214, 36, 40), (120, 14, 20)
-    car_base(c, track=4.0, tyre_w=11.5)
-    c.rect((3, 12, 53, 29), body + (255,), r=3)
-    c.poly([(12, 13), (44, 13), (41, 1.5), (15, 1.5)], body + (255,))
-    c.vgrad((2, 1, 54, 30), (238, 70, 70), body_d)
-    c.hshade((2, 1, 54, 30), 1.04, 0.82)
-    c.poly([(15.5, 4), (40.5, 4), (42.2, 11.8), (13.8, 11.8)], GLASS + (255,))
-    c.line([(17, 5.2), (25, 5.2)], GLASS_HI + (255,), 0.7)
-    # louvred engine lid
-    c.rect((14, 13.8, 42, 22), (30, 30, 34, 255), r=1)
-    for k in range(6):
-        y = 14.8 + k * 1.2
-        c.line([(15, y), (41, y)], (84, 84, 92, 255), 0.5)
-    # wide rectangular tail lights
-    for x0 in (4.5, 42.5):
-        c.rect((x0, 14, x0 + 9, 20.5), (40, 40, 44, 255), r=0.8)
-        c.rect((x0 + 0.6, 14.6, x0 + 8.4, 17.2), (224, 26, 34, 255))
-        c.rect((x0 + 0.6, 17.4, x0 + 4.4, 19.9), (250, 150, 30, 255))
-        c.rect((x0 + 4.6, 17.4, x0 + 8.4, 19.9), (238, 238, 238, 255))
-    # black plastic bumper
-    c.rect((3, 24.4, 53, 27.4), (32, 32, 36, 255), r=1)
-    c.line([(4, 24.8), (52, 24.8)], (84, 84, 90, 255), 0.4)
-    plate(c, 28, 22.6)
-    c.ell((38, 28.6, 41.4, 31), CHROME_D + (255,))
-    # white twin stripes (tuned "Bis")
-    c.rect((25.3, 1.8, 26.6, 12.4), (246, 246, 246, 255))
-    c.rect((29.4, 1.8, 30.7, 12.4), (246, 246, 246, 255))
-    return c.finish()
+    """Fiat 126 (1972-2000), rear view, placed pixel by pixel.
+
+    The layout comes from a rear reference photograph (796x604, car spanning
+    x=132..716, roof at y=18, reflector at y=545), mapped to 56x48 (sprite
+    x = (px - 132) * 0.096, y = (py - 18) * 0.091): the flat roof and
+    near-vertical flanks, the wide slanted rear window, the flat engine lid
+    with two recessed vertical-slat grilles and the central lock, the FIAT
+    and "126" badges, the black-housed amber-over-red lamps at the corners,
+    the wide single-row plate and the deep grey plastic bumper. Painted
+    rosso corsa: only the player's Fiat 500 L is white.
+    """
+    W, H = 56, 48
+    pal = {
+        "W": (212, 40, 44), "w": (178, 28, 34), "s": (140, 20, 28), "d": (96, 14, 20),
+        "k": (26, 26, 30), "f": (26, 26, 30), "g": (44, 54, 66), "G": (150, 164, 180),
+        "a": (240, 150, 30), "r": (200, 20, 24), "c": (222, 224, 226),
+        "p": (206, 210, 212), "b": (40, 70, 170), "m": (116, 118, 124), "M": (84, 86, 92),
+        "o": SHADOW,
+    }
+    grid = [[" "] * W for _ in range(H)]
+
+    def put(y, x, ch, both=True):
+        grid[y][x] = ch
+        if both:
+            grid[y][W - 1 - x] = ch
+
+    def span(y, x0, x1, ch, both=True):
+        for x in range(x0, x1 + 1):
+            put(y, x, ch, both)
+
+    # left silhouette edge per body row: flat roof, almost vertical flanks
+    edge = [9, 8, 8, 7, 7, 7, 6, 6, 6, 5, 5, 5, 4, 4, 4, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 1,
+            1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for y, e in enumerate(edge):
+        span(y, e, 27, "W")
+        put(y, e, "d")
+        put(y, e + 1, "s")
+        if y >= 17:
+            put(y, e + 2, "w")
+    span(0, 9, 27, "w")                                    # roof edge catching the light
+    # wide rear window with slanted sides and black rubber frame
+    for y in range(3, 17):
+        x0 = 10 - (y - 3) * 3 // 13
+        put(y, x0, "f")
+        span(y, x0 + 1, 27, "g")
+    span(3, 10, 27, "f"); span(16, 7, 27, "f")
+    for y in range(4, 16):                                 # reflections, right half only
+        x = 36 - (y - 4) // 2
+        put(y, x, "G", False)
+    span(6, 13, 16, "G", False)
+    span(17, 3, 27, "w")                                   # engine-lid top edge
+    for y in range(21, 28):                                # recessed panel
+        span(y, 7, 27, "w")
+    for y in range(21, 27):                                # two vertical-slat grilles
+        for x in range(10, 24):
+            put(y, x, "k" if x % 2 == 0 else "s")
+    for y in range(19, 23):                                # central lock
+        put(y, 27, "k")
+    span(29, 6, 12, "b", False); span(30, 6, 12, "b", False)   # FIAT badge
+    span(29, 7, 11, "c", False)
+    for y, x0, x1 in ((28, 46, 49), (29, 46, 49), (30, 47, 51), (31, 47, 51)):
+        span(y, x0, x1, "c", False)                        # "126 FSM" script
+    for y in range(31, 40):                                # lamps in black housings
+        span(y, 0, 6, "k")
+    for y in range(32, 35):
+        span(y, 1, 5, "a")
+    for y in range(35, 39):
+        span(y, 1, 5, "r")
+    for y in range(36, 41):                                # wide single-row plate
+        span(y, 16, 27, "p")
+    for x in (18, 20, 23, 25, 27):
+        for y in (37, 38, 39):
+            put(y, x, "k")
+    for y in range(39, 47):                                # deep grey plastic bumper
+        span(y, 0, 27, "m")
+    span(39, 16, 27, "p"); span(40, 16, 27, "p")
+    span(41, 1, 27, "M"); span(46, 1, 27, "M")
+    span(43, 26, 27, "k")                                  # tow-hook slot
+    span(47, 3, 27, "o")
+    span(47, 7, 13, "r", False)                            # red reflector under the bumper
+    img = Image.new("RGBA", (W, H))
+    px = img.load()
+    for y in range(H):
+        for x in range(W):
+            ch = grid[y][x]
+            px[x, y] = (0, 0, 0, 0) if ch == " " else pal[ch] + (255,)
+    return img
 
 
 def dyane() -> Image.Image:

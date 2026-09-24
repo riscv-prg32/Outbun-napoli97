@@ -1,6 +1,6 @@
 {
  "sprites": 35,
- "rle_bytes": 9271,
+ "rle_bytes": 9432,
  "lut_bytes": 585,
  "palette_entries": 176,
  "theme_bytes": 740,
@@ -11,7 +11,7 @@
   ],
   "CAR_126": [
    56,
-   36
+   48
   ],
   "CAR_DYANE": [
    56,
