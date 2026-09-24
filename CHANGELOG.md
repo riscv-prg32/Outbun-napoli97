@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 — 2026-09-24 — photo-traced classics
 
 - Redrew the hero car as a Fiat 500 L (1968–72), placed pixel by pixel on a grid measured from rear-view photographs: domed roof with the folded soft-top, framed rear window, slatted grille band, louvred engine lid with chrome handle, plate-light hump over the black two-row plate, tall amber-over-red wing lamps, "500 L" script and thin chrome bumper. The sprite is now 56x48, matching the real car's near-square rear.
 - Brake lamps and remote-player markers follow each car's own sprite height.

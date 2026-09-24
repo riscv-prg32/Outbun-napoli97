@@ -79,11 +79,11 @@ python3 -m prg32 qemu run
 
 The ready-to-publish bundle is committed in [`dist/`](dist/):
 
-- `dist/OutBun-napoli97-1.0.0-store.zip` — manifest, icon, screenshot and both architecture variants
+- `dist/OutBun-napoli97-1.1.0-store.zip` — manifest, icon, screenshot and both architecture variants
 - `dist/store/` — the unpacked bundle
 - `dist/SHA256SUMS` — checksums
 
-Publish it with `python3 -m prg32 store publish-bundle dist/OutBun-napoli97-1.0.0-store.zip` against your Store.
+Publish it with `python3 -m prg32 store publish-bundle dist/OutBun-napoli97-1.1.0-store.zip` against your Store.
 
 ## Budget
 
