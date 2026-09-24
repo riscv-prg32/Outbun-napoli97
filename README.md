@@ -31,7 +31,7 @@ The route is described section by section in [`src/route.h`](src/route.h) and ex
 
 ## Cars
 
-The hero car is a **white Fiat 500 L**; its sprite is placed pixel by pixel from photographs of a real 1968–72 car: soft-top, slatted grille, louvred engine lid, plate-light hump, tall amber-over-red lamps and the "500 L" script. The other players — and the CPU rivals when fewer than four humans play — drive the other souped-up classics, never in white: a red **Fiat 126** (also drawn from a photograph of the real rear, with its twin slatted grilles and deep grey bumper), **Citroën Dyane** and **VW Maggiolino (Beetle)**. Each has its own top speed, acceleration and grip. The road is shared with Piaggio Apes full of lemons, Vespas and the blue SITA coach.
+The hero car is a **white Fiat 500 L**; its sprite is placed pixel by pixel from photographs of a real 1968–72 car: soft-top, slatted grille, louvred engine lid, plate-light hump, tall amber-over-red lamps and the "500 L" script. The other players — and the CPU rivals when fewer than four humans play — drive the other souped-up classics, never in white: a red **Fiat 126** (also drawn from a photograph of the real rear, with its twin slatted grilles and deep grey bumper), a jade-green **Citroën Dyane** (its 2CV-family rear traced from a photograph: canvas roll-top, split boot, separate grey wings, tube bumper) and **VW Maggiolino (Beetle)**. Each has its own top speed, acceleration and grip. The road is shared with Piaggio Apes full of lemons, Vespas and the blue SITA coach.
 
 ## Controls
 
@@ -91,8 +91,8 @@ Publish it with `python3 -m prg32 store publish-bundle dist/OutBun-napoli97-1.0.
 |---|---:|
 | code, tables and sprites (portable ABI image) | 43,560 |
 | AUDIO block (6 tracks, 8 procedural voices) | 2,496 |
-| header, metadata, colophon, icon, screenshot | 8,565 |
-| **cartridge** | **54,621 / 65,536** |
+| header, metadata, colophon, icon, screenshot | 8,609 |
+| **cartridge** | **54,665 / 65,536** |
 
 The executable image uses 48,612 bytes of the 64 KiB cartridge RAM. Real-firmware QEMU captures are in [`release-artifacts/qemu/`](release-artifacts/qemu/). [docs/TECHNICAL_NOTES.md](docs/TECHNICAL_NOTES.md) explains how the art fits: a programmed 213-colour palette, row-group nibble-RLE sprites and procedural panoramas.
 

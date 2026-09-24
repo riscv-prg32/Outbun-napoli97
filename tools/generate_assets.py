@@ -408,36 +408,82 @@ def fiat126() -> Image.Image:
 
 
 def dyane() -> Image.Image:
-    """Citroen Dyane: tall narrow tub, grey canvas roof, flared wings."""
-    c = Canvas(CAR_W, CAR_H)
-    body, body_d = (244, 212, 110), (168, 128, 44)
-    car_base(c, track=6.5, tyre_w=9.0)
-    # flared rear wings
-    for x0 in (3.5, 38.5):
-        c.ell((x0, 15, x0 + 14, 31), body + (255,))
-    c.poly([(9, 30), (47, 30), (45, 11), (11, 11)], body + (255,))
-    c.vgrad((3, 10, 53, 31), (252, 230, 150), body_d)
-    c.hshade((3, 10, 53, 31), 1.05, 0.82)
-    # canvas roof
-    c.rect((12, 1.2, 44, 13), (136, 138, 132, 255), r=5)
-    c.vgrad((11, 1, 45, 13), (164, 166, 160), (98, 100, 96))
-    for k in range(3):
-        c.line([(14, 4 + k * 3), (42, 4 + k * 3)], (110, 112, 106, 255), 0.4)
-    c.rect((18, 3.8, 38, 9.6), GLASS + (255,), r=2)
-    c.line([(20, 4.8), (26, 4.8)], GLASS_HI + (255,), 0.6)
-    # tailgate panel and hinge line
-    c.line([(12.5, 12.2), (43.5, 12.2)], shade(body_d, 0.9) + (255,), 0.6)
-    c.rect((17, 14, 39, 23.5), (236, 200, 96, 255), r=1.4)
-    c.line([(17.5, 23.2), (38.5, 23.2)], shade(body_d, 0.8) + (255,), 0.5)
-    # round lamps on wings
-    for cx in (9.6, 46.4):
-        c.ell((cx - 2.6, 17.4, cx + 2.6, 22.6), (220, 30, 30, 255))
-        c.ell((cx - 1.2, 18.2, cx + 0.2, 19.6), (255, 170, 160, 255))
-        c.ell((cx - 1.6, 23.2, cx + 1.6, 25.6), (246, 150, 30, 255))
-    c.rect((6, 25.6, 50, 27.2), CHROME + (255,), r=0.8)
-    plate(c, 28, 20.2)
-    c.ell((14, 28.6, 17.2, 30.8), CHROME_D + (255,))
-    return c.finish()
+    """Citroen Dyane / 2CV family, rear view, placed pixel by pixel.
+
+    The layout comes from a rear reference photograph of a 2CV6 Special
+    (680x1024, car spanning x=18..660, roof at y=240, tyres to y=860),
+    mapped to 56x48 (sprite x = (px - 18) * 0.087, y = (py - 240) * 0.077):
+    the black canvas roll-top with its framed rear window, the chrome strip,
+    the tall narrow body with the split boot lid and handle, the separate
+    grey rear wings over thin tyres, the badges, the square red-over-amber
+    lamps, the EU plate and the tube bumper. Painted pastel vert jade: white
+    and red are taken by the Fiat 500 L and the 126.
+    """
+    W, H = 56, 48
+    pal = {
+        "W": (150, 204, 164), "w": (120, 172, 134), "s": (90, 136, 104),
+        "K": (48, 50, 56), "g": (46, 58, 70), "c": (196, 202, 206),
+        "F": (178, 182, 188), "f": (136, 140, 148), "r": (210, 30, 30), "a": (244, 150, 30),
+        "p": (246, 246, 244), "b": (30, 70, 200), "t": (40, 40, 44), "u": (222, 226, 216),
+        "o": SHADOW,
+    }
+    grid = [[" "] * W for _ in range(H)]
+
+    def put(y, x, ch, both=True):
+        grid[y][x] = ch
+        if both:
+            grid[y][W - 1 - x] = ch
+
+    def span(y, x0, x1, ch, both=True):
+        for x in range(x0, x1 + 1):
+            put(y, x, ch, both)
+
+    # canvas roll-top: rounded shoulders, framed window
+    for y in range(0, 15):
+        span(y, 11 if y == 0 else 10 if y == 1 else 9, 27, "K")
+    for y in range(5, 14):
+        x0 = 13 if y in (5, 13) else 12
+        put(y, x0, "c")
+        span(y, x0 + 1, 27, "g")
+    span(4, 14, 27, "c"); span(14, 14, 27, "c")
+    span(15, 9, 27, "c")                                   # chrome strip over the boot
+    # tall narrow body, slightly wider towards the bottom
+    for y in range(16, 39):
+        e = 8 if y < 22 else 7
+        span(y, e, 27, "W")
+        put(y, e, "s"); put(y, e + 1, "w")
+    for y in range(16, 34):                                # split boot lid seam
+        put(y, 26, "w")
+    span(29, 26, 27, "c")                                  # boot handle
+    # separate grey rear wings over the thin tyres
+    for y, x0 in ((21, 3), (22, 2), (23, 1)):
+        span(y, x0, 6, "F")
+    for y in range(24, 39):
+        span(y, 0, 6, "F")
+        put(y, 0, "f"); put(y, 6, "f")
+    span(31, 9, 18, "t", False); span(31, 39, 47, "t", False)   # "2CV6 Special" / "CITROEN"
+    for y in range(33, 38):                                # square lamps, red over amber
+        span(y, 9, 15, "r" if y < 36 else "a")
+    for y in range(33, 38):                                # EU plate
+        span(y, 17, 27, "p")
+        put(y, 17, "b"); put(y, 17 + 21, "b", False)
+    grid_fix = [(35, x) for x in (20, 22, 25, 27, 30, 33, 35)]
+    for y, x in grid_fix:
+        grid[y][x] = "t"; grid[y - 1][x] = "t"
+    for x in range(3, 28):                                 # tube bumper
+        put(39, x, "u"); put(40, x, "t"); put(41, x, "u")
+    for y in range(39, 47):                                # thin tyres under the wings
+        span(y, 1, 5, "t")
+    for y in range(42, 48):
+        span(y, 6, 27, "o")
+    span(47, 1, 5, "o")
+    img = Image.new("RGBA", (W, H))
+    px = img.load()
+    for y in range(H):
+        for x in range(W):
+            ch = grid[y][x]
+            px[x, y] = (0, 0, 0, 0) if ch == " " else pal[ch] + (255,)
+    return img
 
 
 def beetle() -> Image.Image:

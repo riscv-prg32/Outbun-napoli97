@@ -98,7 +98,7 @@ static const uint8_t car_grip[4] = {17, 16, 20, 15};
 static const char car_names[4][14] = {"FIAT 500 L", "FIAT 126", "CITROEN DYANE", "VW MAGGIOLINO"};
 static const char car_tag[4][4] = {"500", "126", "DYA", "VW"};
 /* left tail lamp {x, y, w, h} in sprite pixels; the right lamp is mirrored */
-static const uint8_t car_lamp[4][4] = {{5, 35, 3, 5}, {1, 35, 5, 4}, {7, 17, 5, 5}, {8, 15, 4, 6}};
+static const uint8_t car_lamp[4][4] = {{5, 35, 3, 5}, {1, 35, 5, 4}, {9, 33, 7, 3}, {8, 15, 4, 6}};
 static const uint8_t car_dot[4] = {C_WHITE, C_RED, C_YELLOW, C_CYAN};
 
 /* ------------------------------------------------------------------------ */

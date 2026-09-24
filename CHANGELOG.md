@@ -6,6 +6,7 @@
 - Brake lamps and remote-player markers follow each car's own sprite height.
 - The car-select screen names the hero car "FIAT 500 L".
 - Redrew the Fiat 126 from a rear-view photograph on the same measured pixel grid: flat roof and near-vertical flanks, wide slanted rear window, flat engine lid with two recessed vertical-slat grilles and the central lock, FIAT and "126" badges, black-housed amber-over-red lamps, wide single-row plate and deep grey plastic bumper. It stays red, so only the player's 500 L is white; it is now 56x48 and its brake lamps follow the new layout.
+- Redrew the Citroën Dyane from a rear-view photograph of its 2CV6 sibling on the same measured pixel grid: black canvas roll-top with framed rear window, chrome strip, tall narrow body with split boot lid and handle, separate grey rear wings over thin tyres, badges, square red-over-amber lamps, EU plate and tube bumper. Painted jade green (white and red belong to the 500 L and the 126); now 56x48 with matching brake lamps.
 
 ## 1.0.0 — 2026-09-23
 
