@@ -29,6 +29,7 @@ static int failures;
 #define CHECK(c, msg) do { if (!(c)) { printf("FAIL: %s (line %d)\n", msg, __LINE__); failures++; } } while (0)
 
 static uint32_t saved_score; static int submits;
+static int track_playing;
 int prg32_score_submit_current_player(const char *game, uint32_t sc) { CHECK(strcmp(game, "OutBun-napoli97") == 0, "score game"); submits++; if (sc > saved_score) saved_score = sc; return 0; }
 int prg32_score_count(const char *game) { (void)game; return saved_score ? 1 : 0; }
 int prg32_score_get(const char *game, int i, prg32_score_t *o) { (void)game; if (i || !saved_score) return -1; memset(o, 0, sizeof *o); strcpy(o->player, "RAF"); o->score = saved_score; return 0; }
@@ -47,8 +48,8 @@ void prg32_gfx_rect_indexed(int x, int y, int w, int h, uint8_t index) {
 void prg32_gfx_clear_indexed(uint8_t index) { memset(fb, index, sizeof fb); }
 void prg32_palette_set(uint8_t index, uint16_t rgb565) { pal[index] = rgb565; }
 void prg32_band_set_game_info(const char *text) { (void)text; }
-void prg32_audio_play_track(uint16_t track_id) { CHECK(track_id < 6, "track id"); }
-void prg32_audio_stop_track(void) {}
+void prg32_audio_play_track(uint16_t track_id) { CHECK(track_id < 6, "track id"); track_playing = 1; }
+void prg32_audio_stop_track(void) { track_playing = 0; }
 void prg32_audio_note(uint8_t c, uint8_t i, uint8_t n, uint8_t v, uint32_t d) { (void)c; (void)i; (void)n; (void)v; (void)d; }
 void prg32_audio_note_on(uint8_t c, uint8_t i, uint8_t n, uint8_t v) { (void)c; (void)i; (void)n; (void)v; }
 void prg32_audio_note_off(uint8_t c) { (void)c; }
@@ -208,6 +209,7 @@ int main(void) {
     CHECK(checkpoints == 8, "all eight intermediate checkpoints");
     CHECK(rc[0].finished == 1 && min_left > 0, "bot reaches Vietri sul Mare in time");
     CHECK(state == ST_PANINO, "panino screen");
+    CHECK(!track_playing && !engine_note, "finish audio stops before panino screen");
     frames(260); shot("11-panino");
     press(PRG32_BTN_A);
     CHECK(state == ST_RESULTS && submits == 1 && saved_score == score, "results and persistent score");
@@ -240,6 +242,7 @@ int main(void) {
     CHECK(phase == PH_TIMEUP, "time up");
     frames(260);
     CHECK(state == ST_PANINO && rc[0].finished == 2, "time-up panino");
+    CHECK(!track_playing && !engine_note, "time-up audio stops before panino screen");
     frames(220); press(PRG32_BTN_A); frames(100); press(PRG32_BTN_A);
     CHECK(state == ST_TITLE, "title after time up");
 

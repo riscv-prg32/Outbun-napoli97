@@ -1748,7 +1748,15 @@ static void race_update(void) {
         /* goal run-out or time-up coast */
         if (phase == PH_GOAL) { p->speed = (int16_t)imax(1200, p->speed - 10); p->z += p->speed >> 4; }
         else { p->speed = (int16_t)imax(0, p->speed - 18); p->z += p->speed >> 4; }
-        if (phase_ticks > 200) { panino_layers = 0; enter_state(ST_PANINO); }
+        if (phase_ticks > 200) {
+            /* Goal and game-over jingles hold their final notes.  Release the
+             * track before leaving the race so hardware synth voices cannot
+             * remain audible throughout the panino and results screens. */
+            prg32_audio_stop_track();
+            engine_sound(0);
+            panino_layers = 0;
+            enter_state(ST_PANINO);
+        }
     }
     for (int k = 1; k < RACERS; k++) if (rc[k].kind == RK_AI) update_ai(&rc[k]);
     update_traffic();
